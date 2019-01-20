@@ -1,33 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <title>Canvas2</title>
 </head>
 <style>
-    *{
+    * {
         padding: 0;
         margin: 0;
     }
 
-    #apple{
+    #apple {
         display: block;
         background-color: gray;
         /* 如果你采用直接设置css样式的方式对canvas设置宽高，就相当于在对一张图形进行放大或缩小，图形就会变形。 */
     }
 
-    button{
-        width:100px;
-        height:30px;
-        font-size:10px;
+    button {
+        width: 100px;
+        height: 30px;
+        font-size: 10px;
         line-height: 10px;
         position: fixed;
-        top:0;
-        right:0;
+        top: 0;
+        right: 0;
 
     }
-
 </style>
 
 
@@ -36,35 +36,35 @@
     <button id='eraser'>擦一擦</button>
 
     <script>
-        var Apple= document.getElementById('apple');
-        
+        var Apple = document.getElementById('apple');
+
         size()
 
         // draw.fillStyle = 'green';
         // draw.fillRect(10, 10, 100, 100);
 
-        window.onresize = function(){
+        window.onresize = function () {
             size()
         }
 
-        function size(){
+        function size() {
             var pageWidth = document.documentElement.clientWidth
             var pageHeight = document.documentElement.clientHeight
             Apple.width = pageWidth
             Apple.height = pageHeight
         }
 
-        function drawCircle(x,y,radius){
+        function drawCircle(x, y, radius) {
             draw.beginPath()
-            draw.arc(x,y,radius,0,Math.PI*2);
+            draw.arc(x, y, radius, 0, Math.PI * 2);
             draw.fill() //draw.stroke()
         }
 
-        function drawLine(x1,y1,x2,y2){
+        function drawLine(x1, y1, x2, y2) {
             draw.beginPath();
-            draw.moveTo(x1,y1);
+            draw.moveTo(x1, y1);
             draw.lineWidth = 20;
-            draw.lineTo(x2,y2);
+            draw.lineTo(x2, y2);
             draw.stroke();
             draw.closePath();
         }
@@ -72,12 +72,12 @@
 
         /*******************************************************/
 
-        var canvasStatus = 0
-        eraser.onclick = function(){
-        if (canvasStatus == 0)
-            canvasStatus = 1
-        else
-            canvasStatus = 0
+        var canvasStatus = 1
+        eraser.onclick = function () {
+            if (canvasStatus == 1)
+                canvasStatus = 0
+            else
+                canvasStatus = 1
         }
 
         /*******************************************************/
@@ -86,46 +86,93 @@
 
         var using = false
         var lastPoint = {
-            x:undefined,
-            y:undefined
+            x: undefined,
+            y: undefined
         }
-        Apple.onmousedown = function(aaa){
-            var x = aaa.clientX
-            var y = aaa.clientY
 
-            if(canvasStatus == 0){
-                using = true
-                draw.clearRect(x-5,y-5,10,10)
-            }else{
-                using = true
-                lastPoint = {'x':x,'y':y} 
-                console.log(lastPoint)
-                drawCircle(x,y,10)
-            }
-            
-        }
-        Apple.onmousemove = function(aaa){
-            var x = aaa.clientX
-            var y = aaa.clientY
+        if (document.body.ontouchstart !== undefined) {
+            //支持触屏
+            Apple.ontouchstart = function (aaa){
+                console.log('kaishi')
+                var x = aaa.touches[0].clientX
+                var y = aaa.touches[0].clientY
 
-            if (canvasStatus == 0){
-                if(using){
-                    draw.clearRect(x-5,y-5,10,10)
+                if (canvasStatus == 1) {
+                    using = true
+                    draw.clearRect(x - 5, y - 5, 10, 10)
+                } else {
+                    using = true
+                    lastPoint = { 'x': x, 'y': y }
+                    console.log(lastPoint)
+                    drawCircle(x, y, 10)
                 }
-            }else{
-                if (using){
-                    var newPoint = {'x':x,'y':y}
-                    drawCircle(x,y,10)
-                    drawLine(lastPoint.x,lastPoint.y,newPoint.x,newPoint.y)
-                    lastPoint = newPoint
-                }
-            }
 
+            }
+            Apple.ontouchmove = function(aaa){
+                console.log('move')
+                var x = aaa.touches[0].clientX
+                var y = aaa.touches[0].clientY
+
+                if (canvasStatus == 1) {
+                    if (using) {
+                        draw.clearRect(x - 5, y - 5, 10, 10)
+                    }
+                } else {
+                    if (using) {
+                        var newPoint = { 'x': x, 'y': y }
+                        drawCircle(x, y, 10)
+                        drawLine(lastPoint.x, lastPoint.y, newPoint.x, newPoint.y)
+                        lastPoint = newPoint
+                    }
+                }
+
+            }
+            Apple.ontouchend = function(){
+                console.log('88')
+                using = false
+            }
+        } else {
+            //支持鼠标
+            Apple.onmousedown = function (aaa) {
+                var x = aaa.clientX
+                var y = aaa.clientY
+                if (canvasStatus == 1) {
+                    using = true
+                    draw.clearRect(x - 5, y - 5, 10, 10)
+                } else {
+                    using = true
+                    lastPoint = { 'x': x, 'y': y }
+                    console.log(lastPoint)
+                    drawCircle(x, y, 10)
+                }
+
+            }
+            Apple.onmousemove = function (aaa) {
+                var x = aaa.clientX
+                var y = aaa.clientY
+
+                if (canvasStatus == 1) {
+                    if (using) {
+                        draw.clearRect(x - 5, y - 5, 10, 10)
+                    }
+                } else {
+                    if (using) {
+                        var newPoint = { 'x': x, 'y': y }
+                        drawCircle(x, y, 10)
+                        drawLine(lastPoint.x, lastPoint.y, newPoint.x, newPoint.y)
+                        lastPoint = newPoint
+                    }
+                }
+
+            }
+            Apple.onmouseup = function (aaa) {
+                using = false
+            }
         }
-        Apple.onmouseup = function(aaa){
-         using = false
-        }
+
+
 
     </script>
-  </body>
+</body>
+
 </html>
