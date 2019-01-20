@@ -4,18 +4,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <title>Canvas2</title>
+
+    <title>Hi~Canvas</title>
 </head>
 <style>
     * {
         padding: 0;
         margin: 0;
     }
-
+    ol,li{
+        list-style: none;
+    }
+    
     #apple {
         display: block;
-        background-color: gray;
+        background-color: #929aab;
         /* 如果你采用直接设置css样式的方式对canvas设置宽高，就相当于在对一张图形进行放大或缩小，图形就会变形。 */
+        position: fixed;
+        top:0;
+        left:0;
+    }
+    body{
+        overflow: hidden;
     }
 
     button {
@@ -26,14 +36,92 @@
         position: fixed;
         top: 0;
         right: 0;
+        
 
     }
+
+    .icon {
+        width: 50px;
+        height: 50px;
+        vertical-align: -0.15em;
+        fill: #fff6f6;
+        overflow: hidden;
+        padding: 10px;
+        transition: all 0.3s;
+    }
+    .action .icon.active{
+        fill:#393e46;
+        transform: scale(1.2);
+        
+    }
+
+    .action {
+        position:  fixed;
+        display: inline;
+        top:20px;
+        left:20px;
+    }
+    .colors{
+        position:fixed;
+        top:180px;
+        right:30px;
+        /* border: 1px solid black; */
+    }
+    .colors li{
+        width: 40px;
+        height: 40px;
+        border: 1px solid #393e46;
+        margin: 10px 0;
+        border-radius: 50%;
+        transition: all 0.3s;
+    }
+
+    .colors > li.aa{
+        background-color: #fb929e;
+    }
+    .colors > li.bb{
+        background-color: #ffdfdf;
+    }
+    .colors > li.cc{
+        background-color: #fff6f6;
+    }
+    .colors > li.dd{
+        background-color: #aedefc;
+    }
+    .colors > li.ee{
+        background-color: black;
+    }
+    .colors > li.active{
+        box-shadow: 0px 0px 22px -2px rgba(71,74,86,1);
+        transform: scale(1.1);
+    }
+
+
 </style>
 
 
 <body>
+    <!-- <span>小猪佩奇的画板</span> -->
     <canvas id='apple'></canvas>
-    <button id='eraser'>擦一擦</button>
+    <!-- <button id='eraser'>擦一擦</button> -->
+
+    <div class="action">
+        <svg id="pen" class="active icon">
+            <use xlink:href="#icon-huabi"></use>
+        </svg>
+        <svg id="eraser" class="icon">
+            <use xlink:href="#icon-Eraser-Tool"></use>
+        </svg>
+    </div>
+    <ol class="colors">
+        <li id="aa" class="aa"></li>
+        <li id="bb" class="bb"></li>
+        <li id="cc" class="cc"></li>
+        <li id="dd" class="dd"></li>
+        <li id="ee" class="ee  active"></li>
+    </ol> 
+
+
 
     <script>
         var Apple = document.getElementById('apple');
@@ -73,16 +161,76 @@
         /*******************************************************/
 
         var canvasStatus = 1
-        eraser.onclick = function () {
-            if (canvasStatus == 1)
-                canvasStatus = 0
-            else
-                canvasStatus = 1
+        // eraser.onclick = function () {
+        //     if (canvasStatus == 1)
+        //         canvasStatus = 0
+        //     else
+        //         canvasStatus = 1
+        // }
+        pen.onclick = function(){
+            canvasStatus = 1
+            pen.classList.add('active')
+            eraser.classList.remove('active')
+        }
+        eraser.onclick = function(){
+            canvasStatus = 0
+            eraser.classList.add('active')
+            pen.classList.remove('active')
         }
 
         /*******************************************************/
 
-        var draw = Apple.getContext('2d');
+        var draw = Apple.getContext('2d'); // getContext() 的方法，这个方法是用来获得渲染上下文和它的绘画功能。
+
+        aa.onclick = function(){
+            draw.strokeStyle = '#fb929e'
+            draw.fillStyle = '#fb929e'
+            aa.classList.add('active')
+            bb.classList.remove('active')
+            cc.classList.remove('active')
+            dd.classList.remove('active')
+            ee.classList.remove('active')
+        }
+        bb.onclick = function(){
+            draw.strokeStyle = '#ffdfdf'
+            draw.fillStyle = '#ffdfdf'
+            bb.classList.add('active')
+            aa.classList.remove('active')
+            cc.classList.remove('active')
+            dd.classList.remove('active')
+            ee.classList.remove('active')
+        }
+        cc.onclick = function(){
+            draw.strokeStyle = '#fff6f6'
+            draw.fillStyle = '#fff6f6'
+            cc.classList.add('active')
+            bb.classList.remove('active')
+            aa.classList.remove('active')
+            dd.classList.remove('active')
+            ee.classList.remove('active')
+        }
+        dd.onclick = function(){
+            draw.strokeStyle = '#aedefc'
+            draw.fillStyle = '#aedefc'
+            dd.classList.add('active')
+            bb.classList.remove('active')
+            cc.classList.remove('active')
+            aa.classList.remove('active')
+            ee.classList.remove('active')
+        }
+        ee.onclick = function(){
+            draw.strokeStyle = 'black'
+            draw.fillStyle = 'black'
+            ee.classList.add('active')
+            bb.classList.remove('active')
+            cc.classList.remove('active')
+            aa.classList.remove('active')
+            ee.classList.remove('active')
+        }
+
+        // draw.changeColor = function(colors){
+        //     .strokeStyle
+        // }
 
         var using = false
         var lastPoint = {
@@ -92,12 +240,12 @@
 
         if (document.body.ontouchstart !== undefined) {
             //支持触屏
-            Apple.ontouchstart = function (aaa){
+            Apple.ontouchstart = function (aaa) {
                 console.log('kaishi')
                 var x = aaa.touches[0].clientX
                 var y = aaa.touches[0].clientY
 
-                if (canvasStatus == 1) {
+                if (canvasStatus == 0) {
                     using = true
                     draw.clearRect(x - 5, y - 5, 10, 10)
                 } else {
@@ -108,12 +256,12 @@
                 }
 
             }
-            Apple.ontouchmove = function(aaa){
+            Apple.ontouchmove = function (aaa) {
                 console.log('move')
                 var x = aaa.touches[0].clientX
                 var y = aaa.touches[0].clientY
 
-                if (canvasStatus == 1) {
+                if (canvasStatus == 0) {
                     if (using) {
                         draw.clearRect(x - 5, y - 5, 10, 10)
                     }
@@ -127,7 +275,7 @@
                 }
 
             }
-            Apple.ontouchend = function(){
+            Apple.ontouchend = function () {
                 console.log('88')
                 using = false
             }
@@ -136,7 +284,7 @@
             Apple.onmousedown = function (aaa) {
                 var x = aaa.clientX
                 var y = aaa.clientY
-                if (canvasStatus == 1) {
+                if (canvasStatus == 0) {
                     using = true
                     draw.clearRect(x - 5, y - 5, 10, 10)
                 } else {
@@ -151,7 +299,7 @@
                 var x = aaa.clientX
                 var y = aaa.clientY
 
-                if (canvasStatus == 1) {
+                if (canvasStatus == 0) {
                     if (using) {
                         draw.clearRect(x - 5, y - 5, 10, 10)
                     }
@@ -173,6 +321,7 @@
 
 
     </script>
+    <script src="//at.alicdn.com/t/font_1024001_log5n805yxd.js"></script>
 </body>
 
 </html>
